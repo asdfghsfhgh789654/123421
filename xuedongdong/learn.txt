@@ -1,0 +1,161 @@
+报错  
+
+一 (jie jue) 
+Non-ASCII character '\xe6' in file
+解
+#!/usr/bin/python   
+# -*- coding: utf-8 -*-
+或者
+#encoding: utf-8
+
+二 
+from people.models import Person
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "people/models.py", line 8, in <module>
+    class Person(models.Model):
+  File "people/models.py", line 9, in Person
+    name = models.CharField(max_length=30)
+  File "/usr/local/lib/python2.7/dist-packages/django/db/models/fields/__init__.py", line 1081, in __init__
+    super(CharField, self).__init__(*args, **kwargs)
+  File "/usr/local/lib/python2.7/dist-packages/django/db/models/fields/__init__.py", line 161, in __init__
+    self.db_tablespace = db_tablespace or settings.DEFAULT_INDEX_TABLESPACE
+  File "/usr/local/lib/python2.7/dist-packages/django/conf/__init__.py", line 48, in __getattr__
+    self._setup(name)
+  File "/usr/local/lib/python2.7/dist-packages/django/conf/__init__.py", line 42, in _setup
+    % (desc, ENVIRONMENT_VARIABLE))
+django.core.exceptions.ImproperlyConfigured: Requested setting DEFAULT_INDEX_TABLESPACE, but settings are not configured. You must either define the environment variable DJANGO_SETTINGS_MODULE or call settings.configure() before accessing settings.
+>>> Person.objects.create(name="wei", age=24)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'Person' is not defined
+
+三
+http://wiki.jikexueyuan.com/project/django-set-up-blog/admin.html
+使用第三方插件
+$ pip install bootstrap-admin
+
+Command /usr/bin/python -c "import setuptools, tokenize;__file__='/tmp/pip_build_xuedongdong/bootstrap-admin/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" install --record /tmp/pip-LdyFtn-record/install-record.txt --single-version-externally-managed --compile failed with error code 1 in /tmp/pip_build_xuedongdong/bootstrap-admin
+Storing debug log for failure in /home/xuedongdong/.pip/pip.log
+
+root用户中
+  Real name of requirement bootstrap-admin is bootstrap-admin
+  Downloading bootstrap_admin-0.3.6.tar.gz (158kB): 158kB downloaded
+  Running setup.py (path:/tmp/pip_build_root/bootstrap-admin/setup.py) egg_info for package bootstrap-admin
+    
+Installing collected packages: bootstrap-admin
+  Running setup.py install for bootstrap-admin
+    
+Successfully installed bootstrap-admin
+Cleaning up...
+
+四 (jie jue)
+(?Pd+)改成
+(\d+)/$
+
+五 (cha dian)
+list index out of range
+数据要有
+但返回的数据 和添加的数据对应关系还是没搞清
+
+六 （cha dian）
+文件夹templates添加在根目录下
+TEMPLATE_DIRS = (
+        os.path.join(BASE_DIR, 'templates').replace('\', '/'),
+        )
+无效
+
+Traceback (most recent call last):
+  File "manage.py", line 10, in <module>
+    execute_from_command_line(sys.argv)
+  File "/usr/local/lib/python2.7/dist-packages/django/core/management/__init__.py", line 354, in execute_from_command_line
+    utility.execute()
+  File "/usr/local/lib/python2.7/dist-packages/django/core/management/__init__.py", line 303, in execute
+    settings.INSTALLED_APPS
+  File "/usr/local/lib/python2.7/dist-packages/django/conf/__init__.py", line 48, in __getattr__
+    self._setup(name)
+  File "/usr/local/lib/python2.7/dist-packages/django/conf/__init__.py", line 44, in _setup
+    self._wrapped = Settings(settings_module)
+  File "/usr/local/lib/python2.7/dist-packages/django/conf/__init__.py", line 92, in __init__
+    mod = importlib.import_module(self.SETTINGS_MODULE)
+  File "/usr/lib/python2.7/importlib/__init__.py", line 37, in import_module
+    __import__(name)
+  File "/home/xuedongdong/learn/my_blog/my_blog/settings.py", line 106
+    os.path.join(BASE_DIR, 'templates').replace('\', '/'),)
+                                                          ^
+SyntaxError: EOL while scanning string literal
+
+放在app目录下可以使用
+
+
+看得不是很明白
+
+一
+http://www.ziqiangxuetang.com/django/django-views-urls2.html
+二、url 中的 name
+我们还有刚才的代码，再来看一下 urls.py 中的代码
+from django.conf.urls import patterns, include, url
+ 
+from django.contrib import admin
+admin.autodiscover()
+ 
+urlpatterns = patterns('',
+    # Examples:
+    url(r'^add/$', 'calc.views.add', name='add'),
+    url(r'^add/(\d+)/(\d+)/$', 'calc.views.add2', name='add2'),
+    # url(r'^blog/', include('blog.urls')),
+ 
+    url(r'^admin/', include(admin.site.urls)),
+)
+
+url(r'^add/$', 'calc.views.add', name='add'), 这里的 name='add' 是用来干什么的呢？
+
+我们在开发的时候，刚开始想用的是 /add/4/5/ ，后来需求发生变化，比如我们又想改成 /4_add_5/这样的格式，但是我们在网页中，代码中很多地方都写的是 /add/4/5/，这样就导致每个地方都要改，修改的代价很大，一不小心，有的地方没改过来，就不能用了。
+
+那么有没有更优雅的方式来解决这个问题呢？当然答案是肯定的：
+
+我们在终端上输入(推荐安装 bpython, 这样Django会用 bpython的 shell)
+python manage.py shell
+django-url-name.png
+
+reverse 接收 url 中的 name 作为第一个参数，我们在代码中就可以通过 reverse() 来获取对应的网址（这个网址可以用来跳转，也可以用来计算相关页面的地址），只要对应的 url 的name不改，就不用改代码中的网址。
+
+在网页模板中也是一样，可以很方便的使用。
+不带参数的：
+{% url 'name' %}
+带参数的：参数可以是变量名
+{% url 'name' 参数 %}
+ 
+<a href="{% url 'add2' 4 5 %}">link</a>
+
+上面的代码渲染成最终的页面是
+<a href="/add/4/5/">link</a>
+
+这样就可以通过 {% url 'add2' 4 5 %} 获取到对应的网址 /add/4/5/
+
+当 urls.py 进行更改，前提是不改 name（这个参数设定好后不要轻易改），获取的网址也会动态地跟着变，比如改成：
+
+url(r'^new_add/(\d+)/(\d+)/$', 'calc.views.add2', name='add2'),
+
+这时 {% url 'add2' 4 5 %} 就会渲染对应的网址成 /new_add/4/5/, reverse 函数也是一样会获取新的网址，这样改网址时只需要改 urls.py 中的正则表达式（url 参数第一部分），其它地方都“自动”跟着变了，是不是这样更好呢？
+
+
+开始可能觉得直接写网址更简单，但是用多了你一定会发现，用“死网址”的方法很糟糕。
+
+
+补充
+你已经安装了Django的认证系统，并没有超级用户定义。
+You have installed Django's auth system, and don't have any superusers defined.
+Would you like to create one now? (yes/no): yes
+Username (leave blank to use 'xuedongdong'): xuedongdong
+Email address: 753397215@qq.com
+Password: passwd
+
+
+
+{% endif  %}
+{% ifequal a b %}
+{%  endifequal %}
+
+{{ name | upper }}
+
